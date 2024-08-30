@@ -14,7 +14,12 @@ class AuthController extends AbstractController
     public function checkAuth(): JsonResponse
     {
         if ($this->isGranted('ROLE_USER')) {
-            return new JsonResponse(['authenticated' => true]);
+            // Return user details if authenticated
+            $user = $this->getUser();
+            return new JsonResponse([
+                'authenticated' => true,
+                'userName' => $user->getUsername() // Assuming you use getUsername() for the username
+            ]);
         }
 
         return new JsonResponse(['authenticated' => false], 401);

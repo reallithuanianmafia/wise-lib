@@ -70,7 +70,7 @@ import axios from 'axios';
 import BookForm from './BookForm.vue';
 
 export default {
-  components: { BookForm },
+  components: { BookForm  },
   data() {
     return {
       books: [],

@@ -1,13 +1,38 @@
 {# templates/book/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Register New Book{% endblock %}
+{% block title %}Book Library{% endblock %}
 
 {% block body %}
-<div id="app">
-  <book-list></book-list>
+<div class="container">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{{ path('main_book_list') }}">Book Library</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mr-auto">
+        {% if not isAuthenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register">Register</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <span class="navbar-text">Hi, dear user!</span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Vue component will be rendered here -->
+  <div id="app">
+    <book-list></book-list>
+  </div>
 </div>
 
 <script src="{{ asset('build/app.js') }}"></script>
 {% endblock %}
-

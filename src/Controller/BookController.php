@@ -28,7 +28,11 @@ class BookController extends AbstractController
     #[Route(path: '/books', name: 'main_book_list', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->render('book/index.html.twig');
+        $isAuthenticated = $this->isGranted('ROLE_USER');
+
+        return $this->render('book/index.html.twig', [
+            'isAuthenticated' => $isAuthenticated,
+        ]);
     }
 
     #[Route(path: '/api/books', name: 'api_books', methods: ['GET'])]
