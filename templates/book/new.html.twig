@@ -1,0 +1,15 @@
+{# templates/book/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Register New Book{% endblock %}
+
+{% block body %}
+<h1>Register New Book</h1>
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-success mt-3">Register Book</button>
+{{ form_end(form) }}
+
+<a href="{{ path('book_list') }}" class="btn btn-secondary mt-3">Back to List</a>
+{% endblock %}

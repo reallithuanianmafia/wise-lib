@@ -1,0 +1,13 @@
+{# templates/book/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Register New Book{% endblock %}
+
+{% block body %}
+<div id="app">
+  <book-list></book-list>
+</div>
+
+<script src="{{ asset('build/app.js') }}"></script>
+{% endblock %}
+
