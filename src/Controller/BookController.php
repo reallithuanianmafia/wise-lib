@@ -1,5 +1,4 @@
 <?php
-// src/Controller/BookController.php
 
 namespace App\Controller;
 
@@ -29,16 +28,15 @@ class BookController extends AbstractController
     #[Route(path: '/books', name: 'main_book_list', methods: ['GET'])]
     public function index(): Response
     {
-        // Render the Vue application here
         return $this->render('book/index.html.twig');
     }
 
     #[Route(path: '/api/books', name: 'api_books', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {
-        $searchTerm = $request->query->get('query', '');
+        $searchTerm = $request->query->get('search', ''); // Adjust to match Vue component
         $page = (int) $request->query->get('page', 1);
-        $limit = (int) $request->query->get('itemsPerPage', 10);
+        $limit = (int) $request->query->get('limit', 5); // Ensure default limit matches Vue component
 
         $queryBuilder = $this->entityManager->getRepository(Book::class)->createQueryBuilder('b')
             ->where('b.title LIKE :searchTerm OR b.author LIKE :searchTerm OR b.isbn LIKE :searchTerm')
@@ -46,9 +44,9 @@ class BookController extends AbstractController
             ->orderBy('b.title', 'ASC');
 
         $pagination = $this->paginator->paginate(
-            $queryBuilder, // Query to paginate
-            $page, // Current page number
-            $limit // Limit per page
+            $queryBuilder,
+            $page,
+            $limit
         );
 
         $totalPages = ceil($pagination->getTotalItemCount() / $limit);
@@ -120,36 +118,36 @@ class BookController extends AbstractController
     }
 
     #[Route(path: '/api/books/{id}', name: 'api_book_edit', methods: ['PUT'])]
-public function update(Request $request, int $id): JsonResponse
-{
-    $data = json_decode($request->getContent(), true);
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
-    if (!$this->isValidData($data)) {
-        return new JsonResponse(['error' => 'Invalid data provided'], 400);
+        if (!$this->isValidData($data)) {
+            return new JsonResponse(['error' => 'Invalid data provided'], 400);
+        }
+
+        $book = $this->entityManager->getRepository(Book::class)->find($id);
+
+        if (!$book) {
+            return new JsonResponse(['error' => 'Book not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $book->setTitle($data['title']);
+        $book->setAuthor($data['author']);
+        $book->setIsbn($data['isbn']);
+        $book->setPublicationDate(new \DateTime($data['publicationDate']));
+        $book->setGenre($data['genre']);
+        $book->setNumberOfCopies((int)$data['numberOfCopies']);
+
+        $errors = $this->validator->validate($book);
+        if (count($errors) > 0) {
+            return new JsonResponse(['errors' => (string) $errors], 400);
+        }
+
+        $this->entityManager->flush();
+
+        return new JsonResponse(['message' => 'Book updated successfully!']);
     }
-
-    $book = $this->entityManager->getRepository(Book::class)->find($id);
-
-    if (!$book) {
-        return new JsonResponse(['error' => 'Book not found.'], Response::HTTP_NOT_FOUND);
-    }
-
-    $book->setTitle($data['title']);
-    $book->setAuthor($data['author']);
-    $book->setIsbn($data['isbn']);
-    $book->setPublicationDate(new \DateTime($data['publicationDate']));
-    $book->setGenre($data['genre']);
-    $book->setNumberOfCopies((int)$data['numberOfCopies']);
-
-    $errors = $this->validator->validate($book);
-    if (count($errors) > 0) {
-        return new JsonResponse(['errors' => (string) $errors], 400);
-    }
-
-    $this->entityManager->flush();
-
-    return new JsonResponse(['message' => 'Book updated successfully!']);
-}
 
     #[Route(path: '/api/books/{id}', name: 'api_book_delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
