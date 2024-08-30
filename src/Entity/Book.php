@@ -26,8 +26,8 @@ class Book
     #[ORM\Column(type: 'string', length: 13)]
     #[Assert\NotBlank(message: "ISBN is required.")]
     #[Assert\Length(
-        min: 10,
-        max: 13,
+        min: 0,
+        max: 30,
         minMessage: "ISBN must be at least {{ limit }} characters long",
         maxMessage: "ISBN cannot be longer than {{ limit }} characters"
     )]
